@@ -83,13 +83,13 @@ func main() {
 		}
 
 		go func(sourceConn, destinationConn net.Conn) {
-			go proxy(sourceConn, destinationConn, "src->dst")
-			go proxy(destinationConn, sourceConn, "dst->src")
+			go proxy(sourceConn, destinationConn, "src->dst", borderRequest)
+			go proxy(destinationConn, sourceConn, "dst->src", borderResponse)
 		}(sourceConn, destinationConn)
 	}
 }
 
-func proxy(source, dest net.Conn, mode string) error {
+func proxy(source, dest net.Conn, mode, border string) {
 
 	data := []byte{}
 
@@ -112,15 +112,15 @@ func proxy(source, dest net.Conn, mode string) error {
 	sdus, err := multiplex.ParseServiceDataUnits(data)
 	if err != nil {
 		log.WithError(err).Error("Error parsing SDUs")
-		return err
+		return
 	}
 
 	for _, sdu := range sdus {
+		fmt.Println(border)
 		fmt.Println(sdu.Debug())
 	}
 
 	log.Debug("Retiring thread for ", mode)
-	return nil
 }
 
 // connectDestinationSocket returns a connection to the destination unix socket, after doing some checks
