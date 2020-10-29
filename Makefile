@@ -5,7 +5,7 @@ VERSION="0.0.1-$(shell git rev-parse --short=8 HEAD)"
 DOCKER_ARGS="--rm -u $(shell id -u) -e GOCACHE=/tmp/"
 
 GOLANG_IMAGE="golang:1.15.2"
-GOLINT_IMAGE="cytopia/golint:latest"
+GOLINT_IMAGE="golangci/golangci-lint:v1.31.0"
 
 .PHONY: default fmt vet test coverage build
 
@@ -24,8 +24,8 @@ vet:
 
 lint:
 	@echo ➭ Running go lint
-	@docker run "${DOCKER_ARGS}" -v `pwd`:/go/src/${PROJECT_SRCDIR} \
-		-w /go/src/${PROJECT_SRCDIR} ${GOLINT_IMAGE} ./... | grep -v vendor || true
+	@docker run --rm -v `pwd`:/app \
+		-w /app ${GOLINT_IMAGE} golangci-lint run -v
 
 test:
 	@echo ➭ Running go test

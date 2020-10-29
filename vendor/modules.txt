@@ -1,4 +1,4 @@
-# github.com/gocardano/go-cardano-client v0.0.2
+# github.com/gocardano/go-cardano-client v0.0.4
 ## explicit
 github.com/gocardano/go-cardano-client/cbor
 github.com/gocardano/go-cardano-client/errors
@@ -9,7 +9,8 @@ github.com/gocardano/go-cardano-client/utils
 github.com/sirupsen/logrus
 # github.com/x448/float16 v0.8.4
 github.com/x448/float16
-# golang.org/x/sys v0.0.0-20200625212154-ddb9806d33ae
+# golang.org/x/sys v0.0.0-20201028094953-708e7fb298ac
+## explicit
 golang.org/x/sys/internal/unsafeheader
 golang.org/x/sys/unix
 golang.org/x/sys/windows

@@ -3,7 +3,6 @@ package main
 import (
 	"flag"
 	"fmt"
-	"io"
 	"net"
 	"os"
 
@@ -72,39 +71,56 @@ func main() {
 		// Accept the unix connection
 		sourceConn, err := listener.AcceptUnix()
 		if err != nil {
-			log.WithError(err).Error("Error accepting the unix connection")
+			log.WithError(err).Error("Error accepting the unix socket connection")
 			os.Exit(1)
 		}
 
 		// Connect to destination socket
 		destinationConn, err := connectDestinationSocket(*destinationSocketFile)
 		if err != nil {
-			log.Error("Unable to connect to write socket")
+			log.WithError(err).Error("Unable to connect to destination socket")
 			os.Exit(1)
 		}
 
 		go func(sourceConn, destinationConn net.Conn) {
-			for {
-				// send request to cardano-node
-				err = relayMessage(sourceConn, destinationConn, borderRequest)
-				if err != nil {
-					if err != io.EOF {
-						log.WithError(err).Error("Error relaying message from source to destination")
-					}
-					break
-				}
-
-				// send response from cardano-node
-				err = relayMessage(destinationConn, sourceConn, borderResponse)
-				if err != nil {
-					if err != io.EOF {
-						log.WithError(err).Error("Error relaying message from source to destination")
-					}
-					break
-				}
-			}
+			go proxy(sourceConn, destinationConn, "src->dst", borderRequest)
+			go proxy(destinationConn, sourceConn, "dst->src", borderResponse)
 		}(sourceConn, destinationConn)
 	}
+}
+
+func proxy(source, dest net.Conn, mode, border string) {
+
+	data := []byte{}
+
+	for {
+		buf := make([]byte, receivePacketSize)
+		read, err1 := source.Read(buf)
+		if err1 != nil {
+			log.WithError(err1).Error("error reading ", mode)
+			break
+		}
+
+		_, err2 := dest.Write(buf[:read])
+		if err2 != nil {
+			log.WithError(err2).Error("error writing ", mode)
+		}
+
+		data = append(data, buf[:read]...)
+	}
+
+	sdus, err := multiplex.ParseServiceDataUnits(data)
+	if err != nil {
+		log.WithError(err).Error("Error parsing SDUs")
+		return
+	}
+
+	for _, sdu := range sdus {
+		fmt.Println(border)
+		fmt.Println(sdu.Debug())
+	}
+
+	log.Debug("Retiring thread for ", mode)
 }
 
 // connectDestinationSocket returns a connection to the destination unix socket, after doing some checks
@@ -121,47 +137,4 @@ func connectDestinationSocket(filename string) (net.Conn, error) {
 	}
 
 	return net.Dial(networkUnix, filename)
-}
-
-// debugShelleyContainer prints out the shelley container
-func debugShelleyContainer(data []byte, mode string) error {
-	container, err := multiplex.ParseContainer(data)
-	if err != nil {
-		return err
-	}
-
-	fmt.Println("\n\n" + mode)
-	fmt.Println(container.Debug())
-	return nil
-}
-
-// relayMessage sends the message from the source to destination
-func relayMessage(source, destination net.Conn, mode string) error {
-
-	buf := make([]byte, receivePacketSize)
-
-	// Read from socket
-	read, err := source.Read(buf[:])
-	if err != nil {
-		if err != io.EOF {
-			log.WithError(err).Error("Error reading from source socket")
-		}
-		return err
-	}
-	log.Debugf("Successfuly read [%d] bytes from the source", read)
-
-	// Decode and print out
-	if err = debugShelleyContainer(buf[:read], mode); err != nil {
-		log.WithError(err).Error("Error parsing shelly container")
-		return err
-	}
-
-	// Write to socket
-	wrote, err := destination.Write(buf[:read])
-	if err != nil {
-		log.WithError(err).Error("Error writing to destination socket")
-		return err
-	}
-	log.Debugf("Successfuly sent [%d] bytes to the destination", wrote)
-	return nil
 }
