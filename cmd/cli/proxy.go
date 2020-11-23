@@ -14,8 +14,8 @@ import (
 var version string = "-"
 
 const (
-	borderRequest  = ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> R E Q U E S T >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
-	borderResponse = "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< R E S P O N S E <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<"
+	borderRequest  = "\n>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> R E Q U E S T   # %5d >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n"
+	borderResponse = "\n<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< R E S P O N S E   # %5d <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n"
 
 	networkUnix       = "unix"
 	receivePacketSize = 8192
@@ -115,8 +115,8 @@ func proxy(source, dest net.Conn, mode, border string) {
 		return
 	}
 
-	for _, sdu := range sdus {
-		fmt.Println(border)
+	for id, sdu := range sdus {
+		fmt.Printf(border, id)
 		fmt.Println(sdu.Debug())
 	}
 
