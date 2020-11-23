@@ -67,6 +67,8 @@ github.com/gocardano/go-cardano-client v0.0.3 h1:5g6VmG6XQML+0KpsIekbxMFupihhRFf
 github.com/gocardano/go-cardano-client v0.0.3/go.mod h1:TmxEJOyaI77mOug9XIK+PcjbO8mgyEJ9m4zU1nrnvys=
 github.com/gocardano/go-cardano-client v0.0.4 h1:j+IE6rd2ZyhtmXmG+Vkb9zNIx3p2mlfxG952um0SJYE=
 github.com/gocardano/go-cardano-client v0.0.4/go.mod h1:TmxEJOyaI77mOug9XIK+PcjbO8mgyEJ9m4zU1nrnvys=
+github.com/gocardano/go-cardano-client v0.0.5-0.20201123190308-7f53bcf8bc04 h1:B829can/l5IKvrdx6DpIpUiEQTiAMMMV/7MOxQS+F2U=
+github.com/gocardano/go-cardano-client v0.0.5-0.20201123190308-7f53bcf8bc04/go.mod h1:TmxEJOyaI77mOug9XIK+PcjbO8mgyEJ9m4zU1nrnvys=
 github.com/gogo/googleapis v1.1.0/go.mod h1:gf4bu3Q80BeJ6H1S1vYPm8/ELATdvryBaNFGgqEef3s=
 github.com/gogo/protobuf v1.1.1/go.mod h1:r8qH/GZQm5c6nD/R0oafs1akxWv10x8SbQlK7atdtwQ=
 github.com/gogo/protobuf v1.2.0/go.mod h1:r8qH/GZQm5c6nD/R0oafs1akxWv10x8SbQlK7atdtwQ=
