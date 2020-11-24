@@ -4,6 +4,8 @@ package multiplex
 // Reference: https://roadmap.cardano.org/en/status-updates/update/2020-01-24/
 
 import (
+	"fmt"
+
 	"github.com/gocardano/go-cardano-client/cbor"
 	"github.com/gocardano/go-cardano-client/errors"
 
@@ -109,9 +111,9 @@ func (s *ServiceDataUnit) Bytes() []byte {
 // Debug returns a string representation of the message
 func (s *ServiceDataUnit) Debug() string {
 
-	r := "==========================================================================================" + newline
+	r := fmt.Sprintf("MiniProtocol: %+v / MessageMode: %+v / %x\n", s.miniProtocol.Value(), s.messageMode, s.Bytes())
 	r += cbor.DebugList(s.dataItems)
-	r += "=========================================================================================="
+	r += "============================================================================================"
 
 	return r
 }
